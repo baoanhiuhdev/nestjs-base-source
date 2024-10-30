@@ -1,0 +1,35 @@
+name: ${APP_NAME}-${APP_MODE}
+
+services:
+  backend:
+    depends_on:
+      - mongodb
+    build:
+      context: ..
+      dockerfile: ./docker/NotUpdateDockerFile
+    ports:
+      - ${APP_PORT}:${APP_PORT}
+    networks:
+      - app-network
+
+  mongodb:
+    image: mongo:7.0
+    restart: always
+    container_name: ${APP_NAME}-${APP_MODE}-mongodb
+    environment:
+      - MONGO_INITDB_DATABASE=${MONGO_DB}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+    volumes:
+      - database:/data/db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+    name: ${APP_NAME}-${APP_MODE}
+
+volumes:
+  database:
+    name: ${APP_NAME}-database-${APP_MODE}
